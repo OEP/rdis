@@ -1,0 +1,158 @@
+{
+  "name": "Koala",
+
+  "state": [
+    { "vtype": "int", "vname": "rightSpeed", "value": "0" },
+    { "vtype": "int", "vname": "leftSpeed", "value": "0" },
+    { "vtype": "int", "vname": "convertMetersToTicks", "value": "111" }
+  ],
+
+  "connection": {
+    "conxname": "koalaserial",
+    "conxtype": "serial",
+    "port": "/dev/ttYUSB0",
+    "speed": "38400",
+
+    "threadmodel": {
+      "type": "Synchronous",
+      "freqHz": "10"
+    },
+
+    "startprocess": "resetOdometry",
+    "terminationprocess": "resetOdometry",
+    "keepaliveprocess": {
+      "name": "getSpeed",
+      "freqMS": 10
+    }
+  },
+
+  "primitives": [
+    {
+      "primitive_conx": "koalaserial",
+      "signature": {
+        "name": "resetOdometry",
+        "parms": [ ]
+      },
+
+      "writeLineDelimited": {
+        "delimeter": "comma",
+        "format": [
+          {"meta": "const", "encoding": "ASCII", "value": "G"},
+          {"meta": "const", "encoding": "ASCII", "value": "0"},
+          {"meta": "const", "encoding": "ASCII", "value": "0"}
+        ]
+      },
+
+      "readLineDelimeted": {
+        "delimeter": "comma",
+        "format": [
+          {"meta": "const", "encoding": "ASCII", "value": "cmd=returnSetOdometryChar"}
+        ]
+      }
+    },
+    {
+      "primitive_conx": "koalaserial",
+      "signature": {
+        "name": "setSpeed",
+        "parms": [
+          {"type": "int", "value": "leftSpeedMeters"},
+          {"type": "int", "value": "rightSpeedMeters"}
+        ]
+      },
+
+      "writeLineDelimited": {
+        "delimeter": "comma",
+        "format": [
+          {"meta": "const", "encoding": "ASCII", "value": "D"},
+          {"meta": "vars", "encoding": "ASCII", "value": "leftSpeed = leftSpeedMeters * metersToTicks"},
+          {"meta": "vars", "encoding": "ASCII", "value": "rightSpeed = rightSpeedMeters * metersToTicks"}
+        ]
+      },
+
+      "readLineDelimeted": {
+        "delimeter": "comma",
+        "format": [
+          {"meta": "const", "encoding": "ASCII", "value": "cmd = returnMotorCommandChar"}
+        ]
+      }
+    },
+    {
+      "connection": "koalaserial",
+      "signature": {
+        "name": "getSpeed"
+      },
+
+      "writeLineDelimited": {
+        "delimiter": "comma",
+        "format": [
+          {"meta": "const", "encoding": "ASCII", "value": "E"}
+        ]
+      },
+
+      "readLineDelimited": {
+        "delimiter": "comma",
+        "format": [
+          {"meta": "const", "encoding": "ASCII", "value": "cmd = $field"},
+          {"meta": "vars", "encoding": "ASCII", "value": "leftSpeed = $field"},
+          {"meta": "vars", "encoding": "ASCII", "value": "rightSpeed = $field"}
+        ]
+      }
+    }
+  ],
+
+  "interfaces": [
+    {
+      "signature": {
+        "name": "stop"
+      },
+      "freq": "adhoc",
+
+      "primitive": {
+        "name": "setSpeed",
+        "inparms": [
+          {"name": "leftSpeed", "value": 0},
+          {"name": "rightSpeed", "value": 0}
+        ]
+      }
+    },
+    {
+      "signature": {
+        "name": "moveForward"
+      },
+      "freq": "adhoc",
+
+      "primitive": {
+        "name": "setSpeed",
+        "inparms": [
+          {"name": "leftSpeed", "value": 0.5},
+          {"name": "rightSpeed", "value": 0.5}
+        ]
+      }
+    },
+
+    {
+      "signature": {
+        "name": "getCurrentSpeed"
+      },
+      "freq": "adhoc",
+
+      "primitive": {
+        "name": "getSpeed",
+        "outparms": [
+          {"name": "leftSpeed", "value": "leftSpeed"},
+          {"name": "rightSpeed", "value": "rightSpeed"}
+        ]
+      }
+    }
+  ],
+
+  "domain": {
+    "controlDifferentialDrive": {
+      "name": "setSpeed",
+      "inparms": [
+        {"name": "leftSpeed", "value": "transvel - rotvel"},
+        {"name": "rightSpeed", "value": "transvel - rotvel"}
+      ]
+    }
+  }
+}
