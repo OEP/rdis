@@ -1,0 +1,189 @@
+<!-- $Id: build.xml 6592 2009-01-14 06:50:07Z nkraft $ -->
+
+<project name="rdis" default="all" basedir=".">
+   <property file="rdis.properties" />
+
+   <property name="src"       location="src/" />
+   <property name="lib"       location="lib" />
+   <property name="grammar"   location="grammars/" />
+   <property name="build"     location="bin" />
+   <property name="dist"      location="dist" />
+   <property name="doc"       location="${dist}/doc" />
+
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+   <!--  Paths             -->
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+   
+   <path id="antlr.classpath">
+      <pathelement location="${lib}/antlr-3.2.jar" />
+   </path>
+
+   <path id="compile.classpath">
+      <path refid="antlr.classpath" />
+   </path>
+
+   <zipfileset id="antlr-runtime.zfs" src="${lib}/antlr-runtime-3.2.jar" />
+
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+   <!--  Taskdefs          -->
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+   
+   <taskdef
+      name        = "ANTLR3"
+      classname   = "org.apache.tools.ant.antlr.ANTLR3"
+      classpath   = "${lib}/ant-antlr3.jar"
+   />
+
+   <macrodef name="antlr3">
+      <attribute name="grammar.name" />
+      <attribute name="grammar.package" default="${grammar.package}" />
+      <sequential>
+         <echo message="antlr3 @{grammar.name}" />
+         <ANTLR3
+            target         = "${grammar}/@{grammar.name}"
+            outputdirectory= "${src}/@{grammar.package}"
+            libdirectory   = "${src}/@{grammar.package}"
+            multithreaded  = "${antlr.multithreaded}"
+            report         = "${antlr.report}"
+            debug          = "${antlr.debug}"
+            >
+         <classpath>
+            <path refid="antlr.classpath" />
+         </classpath>
+         <jvmarg value="-Xmx512M" />
+         </ANTLR3>
+      </sequential>
+   </macrodef>
+
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+   <!--  Public Targets    -->
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+   <target
+      name        = "all"
+      depends     = "-build_all,-dist_lang"
+      description = "Build 'hard' and 'easy' variants of dots"
+      />
+
+   <target
+      name        = "clean"
+      depends     = "-clean_build,-clean_dist,-clean_doc,-clean_gen"
+      description = "Delete build files/directories"
+      />
+
+   <target
+      name        = "lang"
+      depends     = "-build_lang,-dist_lang"
+      description = "Build 'easy' variant of dots"
+      />
+
+
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+   <!--  Private Targets   -->
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+   <!--  Build             -->
+
+   <target
+      name     = "-build_all"
+      depends  = "-build_lang"
+      >
+   </target>
+
+   <target name="-build_lang" >
+      <antlr3 grammar.name="${grammar.lexer}.g" />
+      <property name="compile.includes" value="${project.package}/**" />
+      <property name="compile.destdir" value="${build}" />
+      <antcall target="-compile_java" inheritAll="true" />
+   </target>
+
+
+   <target
+      name        = "-compile_java"
+      description = "Compile Java sources to ${dir.build}"
+      >
+      <mkdir dir = "${compile.destdir}" />
+      <javac
+         srcdir      = "${src}"
+         destdir     = "${compile.destdir}"
+         includes    = "${compile.includes}"
+         excludes    = "${compile.excludes}"
+         debug       = "${compile.debug}"
+         deprecation = "${compile.deprecation}"
+         target      = "${compile.target}"
+         source      = "${compile.source}"
+         includeantruntime="false"
+         >
+         <classpath refid="compile.classpath" />
+         <compilerarg value="-Xlint:unchecked" />
+      </javac>
+   </target>
+
+   <!--  Clean             -->
+
+   <target
+      name        = "-clean_build"
+      description = "Delete '${builddir}' directory"
+      >
+      <delete dir="${build}" />
+   </target>
+
+   <target
+      name        = "-clean_dist"
+      description = "Delete '${distdir}' directory"
+      >
+      <delete dir="${dist}" />
+   </target>
+
+   <target
+      name        = "-clean_doc"
+      description = "Delete '${docdir}' directory"
+      >
+      <delete dir="${doc}" />
+   </target>
+   
+   <target
+      name        = "-clean_gen"
+      description = "Delete ANTLR generated files"
+      >
+      <delete file="${src}/${project.package}/lang/${grammar.lexer}.tokens" />
+      <delete file="${src}/${project.package}/lang/${grammar.lexer}.java" />
+      <!--
+      <delete file="${src}/${project.package}/lang/${grammar.parser.basic}.tokens" />
+      <delete file="${src}/${project.package}/lang/${grammar.parser.basic}.java" />
+      <delete file="${src}/${project.package}/lang/${grammar.tree}.tokens" />
+      <delete file="${src}/${project.package}/lang/${grammar.parser.ast}.tokens" />
+      <delete file="${src}/${project.package}/lang/${grammar.parser.ast}.java" />
+      <delete file="${src}/${project.package}/lang/${grammar.tree}.java" />
+      -->
+   </target>
+
+   <!--  Dist              -->
+
+   <target name="-dist_lang">
+      <property name="compile.destdir" value="${build}/" />
+      <property name="jar.name" value="${project.name}-${project.version}-lang.jar" />
+      <property name="manifest.main" value="edu.ua.cs.rdis.${lang.main}" />
+      <antcall target="-jar_java" inheritAll="true" />
+   </target>
+
+
+   <target
+      name        = "-jar_java"
+      description = "Create JAR file"
+      >
+      <mkdir dir="${dist}" />
+      <jar
+         destfile = "${dist}/${jar.name}"
+         basedir  = "${compile.destdir}"
+         >
+         <manifest>
+            <attribute name="Main-Class" value="${manifest.main}" />
+         </manifest>
+         <zipfileset refid="antlr-runtime.zfs" />
+      </jar>
+   </target>
+
+   <!--  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+</project>
