@@ -1,10 +1,13 @@
 grammar RDIS;
 
 tokens {
+	ROBOT;
 	OCURLY 	= '{' ;
 	CCURLY 	= '}' ;
 	COLON   = ':' ;
 	COMMA   = ',' ;
+	PRIMITIVES = '"primitive"' ;
+	NAME = '"name"';
 }
 
 @lexer::header {
@@ -15,34 +18,63 @@ package edu.ua.cs.rdis.gen;
 package edu.ua.cs.rdis.gen;
 }
 
-/** Propogate lexer errors up as IllegalArgumentExceptions */
-@lexer::members {
-  @Override
-  public void reportError(RecognitionException e)  {
-    throw new IllegalArgumentException(e);
-  }
-}
+// TODO: ANTLR balks at this now, so I commented it out (PMK)
+//@lexer::members {
+//  @Override
+//  public void reportError(RecognitionException e)  {
+//    throw new IllegalArgumentException(e);
+//  }
+//}
 
-/** Propogate parser errors up as IllegalArgumentExceptions */
-@members {
-  @Override
-  public void reportError(RecognitionException e) {
-    throw new IllegalArgumentException(e);
-  }
-}
+//@members {
+//  @Override
+//  public void reportError(RecognitionException e) {
+//    throw new IllegalArgumentException(e);
+//  }
+//}
 
 /*--------------------------------------------------
  * PARSER RULES
  *--------------------------------------------------*/
  
-rdis	:	OCURLY CCURLY ;
+rdis
+	:	OCURLY topLevelStatement (COMMA topLevelStatement)* CCURLY
+	;
+
+topLevelStatement
+	: nameStatement
+	;
+
+nameStatement
+	: NAME COLON Identifier
+	;
 
 /*--------------------------------------------------
  * LEXER RULES
  *--------------------------------------------------*/
  
+Identifier
+	: '"' Alpha Alphanumeric* '"'
+	;
+ 
 String 	:
-	'"' ( EscapeSequence | ~('\u0000'..'\u001f' | '\\' | '\"' ) )* '"'
+	'"' StringChar* '"'
+	;
+
+fragment Alphanumeric
+	: Alpha | DecimalDigit
+	;
+
+fragment Alpha
+	: 'a'..'z' | 'A'..'Z'
+	;
+	
+fragment DecimalDigit
+	: '0'..'9'
+	;
+
+fragment StringChar
+	: ( EscapeSequence | ~('\u0000'..'\u001f' | '\\' | '\"' ) )
 	;
 	
 fragment HexDigit
