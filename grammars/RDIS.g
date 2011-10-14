@@ -8,6 +8,9 @@ tokens {
 	// Dummies
 	ROBOT;
 	STATE_VECTOR;
+	CONNECTIONS;
+	CONNECTION_LIST;
+	DECLARE_CONNECTION;
 	DECLARE_STATEVAR;
 	
 	// JSON syntax bits
@@ -18,15 +21,50 @@ tokens {
 	COLON   = ':' ;
 	COMMA   = ',' ;
 	
-	// Keywords
-	STATE = '"state"' ;
+	// Universal keywords
 	NAME = '"name"';
+	
+	// State vector keywords
+	STATE = '"state"' ;
 	TYPE = '"type"';
 	VALUE = '"value"';
 	
+	// Connection keywords.
+	CONNECTIONS = '"connections"';
+	SPP = '"spp"';
+	USB = '"usb"';
+	SPEED = '"speed"';
+	ON_START = '"onStart"';
+	ON_TERMINATE = '"onTerminate"';
+	ON_KEEPALIVE = '"onKeepalive"';
+	INTERVAL = '"interval"';
+	
+	// Primitive keywords
+	PRIMITIVES = '"primitives"';
+	SIGNATURE = '"signature"';
+	PARAMETERS = '"parameters"';
+	WRITE_FORMAT = '"writeFormat"';
+	FORMAT = '"format"';
+	EXPRESSION = '"expression"';
+	READ_FORMAT = '"readFormat"';
+	REGEX = '"regex"';
+	
+	// Interface keywords.
+	INTERFACES = '"interfaces"';
+	PRIMITIVE = '"primitive"';
+	INPUT = '"input"';
+	OUTPUT = '"output"';
+	
+	// TODO: "Domain" modeling.
+	
 	// Data type labels
-	STRING;
+	FLOAT = '"float"';
+	INT = '"int"';		// Not used to label matched tokens. (That's what NUMBER is for).
+	STRING;			// This could be confusing. Serves as a type label for matched strings and also a keyword.
 	NUMBER;
+	IDENTIFIER;
+	OBJECT;
+	LIST;
 }
 
 @lexer::header {
@@ -59,37 +97,49 @@ import java.util.regex.Pattern;
  *--------------------------------------------------*/
  
 rdis
-	:	OCURLY topLevelStatement (COMMA topLevelStatement)* CCURLY -> ^(ROBOT topLevelStatement+)
-	;
-
-topLevelStatement
-	: nameStatement
-	| stateVarsDeclaration
-	;
-
-stateVarsDeclaration
-	: STATE COLON OSQUARE stateVar (COMMA stateVar)* CSQUARE
-		-> ^(STATE_VECTOR stateVar+)
+	: object -> ^(ROBOT object)
 	;
 	
-stateVar
-	: OCURLY stateVarStatement (COMMA stateVarStatement)* CCURLY
-		-> ^(DECLARE_STATEVAR stateVarStatement+)
+object
+	: OCURLY (definition (COMMA definition)*)? CCURLY -> ^(OBJECT definition*)
+	;
+
+list
+	: OSQUARE (value (COMMA value)*)? CSQUARE -> ^(LIST value*)
+	;
+
+definition
+	: keyword COLON value -> ^(keyword value)
+	;
+
+keyword
+	: NAME
+	| FREQ_MS
+	| SPEED
+	| TYPE
+	| VALUE
+	| ON_START
+	| ON_TERMINATE
+	| ON_KEEPALIVE
+	| STATE
+	| CONNECTIONS
+	| SPP
+	| INT
+	| STRING
+	| FLOAT
 	;
 	
-stateVarStatement
-	: nameStatement
-	| TYPE COLON VarType -> ^(VarType)
-	| VALUE COLON value -> ^(value)
-	;
-
-nameStatement
-	: NAME COLON Identifier -> ^(Identifier)
-	;
-
 value
 	: string
 	| number
+	| identifier
+	| list
+	| object
+	| keyword
+	;
+
+identifier
+	: Identifier -> ^(IDENTIFIER Identifier)
 	;
 
 string
@@ -104,10 +154,6 @@ number
 /*--------------------------------------------------
  * LEXER RULES
  *--------------------------------------------------*/
- 
-VarType
-	: '"int"' | '"string"' | '"float"'
-	;
 
 Identifier
 	: '"' Alpha Alphanumeric* '"'

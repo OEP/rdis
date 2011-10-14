@@ -1,0 +1,123 @@
+{
+  "name": "Koala",
+
+  "state": [
+    { "type": "int", "name": "rightSpeed", "value": "0" },
+    { "type": "int", "name": "leftSpeed", "value": "0" },
+    { "type": "int", "name": "convertMetersToTicks", "value": "111" }
+  ],
+
+  "connection": {
+    "name": "koalaserial",
+    "type": "serial",
+    "speed": "38400",
+
+    "onStart": "resetOdometry",
+    "onTerminate": "resetOdometry",
+    "onKeepalive": {
+      "name": "getSpeed",
+      "interval": 10
+    }
+  },
+
+  "primitives": [
+    {
+      "signature": {
+        "name": "resetOdometry",
+      },
+
+      "writeFormat": {
+        "format": "G,0,0\n",
+      },
+
+      "readFormat": {
+        "regex": "g\n"
+      }
+    },
+    {
+      "signature": {
+        "name": "setSpeed",
+        "parameters": [
+          {"type": "int", "value": "leftSpeedMeters"},
+          {"type": "int", "value": "rightSpeedMeters"}
+        ]
+      },
+
+      "writeFormat": {
+        "format": "D,%d,%d\n",
+        "parameters": ["<leftSpeedMeters*metersToTicks>", "<rightSpeedMeters*metersToTicks>"]
+      },
+
+      "readFormat": {
+        "format": "d\n"
+      }
+    },
+    {
+      "signature": {
+        "name": "getSpeed"
+      },
+
+      "writeFormat": {
+        "format": "E\n"
+      },
+
+      "readFormat": {
+        "format": "e,([^,]),([^,])\n",
+        "expression": "<leftSpeed = $1 / metersToTicks; rightSpeed = $2 / metersToTicks>"
+      }
+    }
+  ],
+
+  "interfaces": [
+    {
+      "signature": {
+        "name": "stop"
+      },
+
+      "type": "adhoc",
+
+      "primitive": {
+        "name": "setSpeed",
+        "inparms": [ 0, 0 ]
+      }
+    },
+    {
+      "signature": {
+        "name": "moveForward"
+      },
+
+      "type": "adhoc",
+
+      "primitive": {
+        "name": "setSpeed",
+        "parameters": [
+          {"name": "leftSpeed", "value": 0.5},
+          {"name": "rightSpeed", "value": 0.5}
+        ]
+      }
+    },
+
+    {
+      "signature": {
+        "name": "getCurrentSpeed"
+      },
+
+      "type": "adhoc",
+
+      "primitive": {
+        "name": "getSpeed",
+        "parameters": ["<leftSpeed>", "<rightSpeed>"]
+      }
+    }
+  ],
+
+  "domain": {
+    "controlDifferentialDrive": {
+      "name": "setSpeed",
+      "inparms": [
+        {"name": "leftSpeed", "value": "transvel - rotvel"},
+        {"name": "rightSpeed", "value": "transvel - rotvel"}
+      ]
+    }
+  }
+}
