@@ -7,10 +7,10 @@
     { "type": "int", "name": "convertMetersToTicks", "value": "111" }
   ],
 
-  "connection": {
+  "connections": [{
     "name": "koalaserial",
     "type": "serial",
-    "speed": "38400",
+    "speed": 38400,
 
     "onStart": "resetOdometry",
     "onTerminate": "resetOdometry",
@@ -18,16 +18,16 @@
       "name": "getSpeed",
       "interval": 10
     }
-  },
+  }],
 
   "primitives": [
     {
       "signature": {
-        "name": "resetOdometry",
+        "name": "resetOdometry"
       },
 
       "writeFormat": {
-        "format": "G,0,0\n",
+        "format": "G,0,0\n"
       },
 
       "readFormat": {
@@ -78,7 +78,10 @@
 
       "primitive": {
         "name": "setSpeed",
-        "inparms": [ 0, 0 ]
+        "parameters": [
+          {"name": "leftSpeed", "value": 0},
+          {"name": "rightSpeed", "value": 0}
+        ]
       }
     },
     {
@@ -106,18 +109,11 @@
 
       "primitive": {
         "name": "getSpeed",
-        "parameters": ["<leftSpeed>", "<rightSpeed>"]
+        "returns": [
+          {"name": "leftSpeed", "value": "<leftSpeed>"},
+          {"name": "rightSpeed", "value": "<rightSpeed>"}
+        ]
       }
     }
-  ],
-
-  "domain": {
-    "controlDifferentialDrive": {
-      "name": "setSpeed",
-      "inparms": [
-        {"name": "leftSpeed", "value": "transvel - rotvel"},
-        {"name": "rightSpeed", "value": "transvel - rotvel"}
-      ]
-    }
-  }
+  ]
 }

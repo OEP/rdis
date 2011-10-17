@@ -52,8 +52,7 @@ tokens {
 	// Interface keywords.
 	INTERFACES = '"interfaces"';
 	PRIMITIVE = '"primitive"';
-	INPUT = '"input"';
-	OUTPUT = '"output"';
+	RETURNS = '"returns"';
 	
 	// TODO: "Domain" modeling.
 	
@@ -114,7 +113,7 @@ definition
 
 keyword
 	: NAME
-	| FREQ_MS
+	| INTERVAL
 	| SPEED
 	| TYPE
 	| VALUE
@@ -127,6 +126,17 @@ keyword
 	| INT
 	| STRING
 	| FLOAT
+	| PRIMITIVES
+	| SIGNATURE
+	| WRITE_FORMAT
+	| FORMAT
+	| READ_FORMAT
+	| REGEX
+	| PRIMITIVE
+	| PARAMETERS
+	| INTERFACES
+	| EXPRESSION
+	| RETURNS
 	;
 	
 value
