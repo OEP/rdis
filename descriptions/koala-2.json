@@ -7,18 +7,21 @@
     { "type": "int", "name": "convertMetersToTicks", "value": "111" }
   ],
 
-  "connections": [{
-    "name": "koalaserial",
-    "type": "serial",
-    "speed": 38400,
+  "connections": {
+    "spp": [
+      {
+        "name": "koalaserial",
+        "speed": 38400,
 
-    "onStart": "resetOdometry",
-    "onTerminate": "resetOdometry",
-    "onKeepalive": {
-      "name": "getSpeed",
-      "interval": 10
-    }
-  }],
+        "onStart": "resetOdometry",
+        "onTerminate": "resetOdometry",
+        "onKeepalive": {
+          "name": "getSpeed",
+          "interval": 10
+        }
+      }
+    ]
+  },
 
   "primitives": [
     {
