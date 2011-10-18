@@ -6,12 +6,37 @@ options {
 	output=AST;
 }
 
+tokens {
+	STATE_VECTOR;
+	STATE_VAR;
+}
+
 @header {
 package edu.ua.cs.rdis.gen;
 }
 
 rdis
-	: ^(ROBOT object)
+	: ^(ROBOT ^(OBJECT (namePair|stateVector)+)) -> ^(ROBOT namePair stateVector)
+	;
+	
+stateVector
+	: ^(STATE ^(LIST stateVar+)) -> ^(STATE_VECTOR stateVar+)
+	;
+	
+stateVar
+	: ^(OBJECT (stateVarType|namePair|stateVarValue)+) -> ^(STATE_VAR stateVarType namePair stateVarValue?)
+	;
+	
+stateVarType
+	: ^(TYPE (INT|FLOAT|STRING))
+	;
+
+namePair
+	: ^(NAME identifier)
+	;
+	
+stateVarValue
+	: ^(VALUE primitiveValue)
 	;
 	
 object
@@ -54,9 +79,13 @@ keyword
 	| RETURNS
 	;
 	
-value
+primitiveValue
 	: string
 	| number
+	;
+	
+value
+	: primitiveValue
 	| identifier
 	| list
 	| object
