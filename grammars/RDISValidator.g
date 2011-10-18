@@ -7,8 +7,9 @@ options {
 }
 
 tokens {
-	STATE_VECTOR;
 	STATE_VAR;
+	SERIAL_CONNECTION;
+	KEEPALIVE_OBJECT;
 }
 
 @header {
@@ -19,8 +20,45 @@ rdis
 	: ^(ROBOT ^(OBJECT (namePair|stateVector)+)) -> ^(ROBOT namePair stateVector)
 	;
 	
+connections
+	: ^(CONNECTIONS ^(OBJECT (serialConnections)+)) -> ^(CONNECTIONS serialConnections?)
+	;
+	
+serialConnections
+	: ^(SPP ^(LIST serialConnection+)) -> ^(SPP serialConnection)
+	;
+	
+serialConnection
+	: ^(OBJECT (namePair|connectionSpeed|connectionOnStart|connectionOnTerminate|connectionOnKeepalive)+) ->
+		^(SERIAL_CONNECTION namePair connectionSpeed connectionOnStart connectionOnTerminate connectionOnKeepalive)
+	;
+	
+connectionSpeed
+	: ^(SPEED number)
+	;
+	
+connectionOnStart
+	: ^(ON_START identifier)
+	;
+	
+connectionOnTerminate
+	: ^(ON_TERMINATE identifier)
+	;
+	
+connectionOnKeepalive
+	: ^(ON_KEEPALIVE connectionKeepaliveValue)
+	;
+	
+connectionKeepaliveValue
+	: ^(OBJECT (namePair|keepaliveInterval)+) -> ^(KEEPALIVE_OBJECT namePair keepaliveInterval)
+	;
+		
+keepaliveInterval
+	: ^(INTERVAL number)
+	;
+	
 stateVector
-	: ^(STATE ^(LIST stateVar+)) -> ^(STATE_VECTOR stateVar+)
+	: ^(STATE ^(LIST stateVar+)) -> ^(STATE stateVar+)
 	;
 	
 stateVar
@@ -39,57 +77,10 @@ stateVarValue
 	: ^(VALUE primitiveValue)
 	;
 	
-object
-	: ^(OBJECT definition*)
-	;
 
-list
-	: ^(LIST value*)
-	;
-
-definition
-	: ^(keyword value)
-	;
-
-keyword
-	: NAME
-	| INTERVAL
-	| SPEED
-	| TYPE
-	| VALUE
-	| ON_START
-	| ON_TERMINATE
-	| ON_KEEPALIVE
-	| STATE
-	| CONNECTIONS
-	| SPP
-	| INT
-	| STRING
-	| FLOAT
-	| PRIMITIVES
-	| SIGNATURE
-	| WRITE_FORMAT
-	| FORMAT
-	| READ_FORMAT
-	| REGEX
-	| PRIMITIVE
-	| PARAMETERS
-	| INTERFACES
-	| EXPRESSION
-	| RETURNS
-	;
-	
 primitiveValue
 	: string
 	| number
-	;
-	
-value
-	: primitiveValue
-	| identifier
-	| list
-	| object
-	| keyword
 	;
 
 identifier

@@ -7,11 +7,6 @@ options {
 tokens {
 	// Dummies
 	ROBOT;
-	STATE_VECTOR;
-	CONNECTIONS;
-	CONNECTION_LIST;
-	DECLARE_CONNECTION;
-	DECLARE_STATEVAR;
 	
 	// JSON syntax bits
 	OCURLY 	= '{' ;

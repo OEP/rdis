@@ -1,0 +1,21 @@
+{
+  "name": "robotWithState",
+  "state": [
+    {"type": "int", "type": "float", "name": "FOO"},
+    {"value": 5, "name": "BAR", "type": "int"}
+  ],
+
+  "connections": {
+    "spp": [
+      { "name": "serialConnection",
+        "speed": 38400,
+        "onStart": "resetOdometry",
+        "onTerminate": "resetOdometry",
+        "onKeepalive": {
+          "name": "getSpeed",
+          "interval": 10
+        }
+      }
+    ]
+  }
+}
