@@ -17,7 +17,7 @@ package edu.ua.cs.rdis.gen;
 }
 
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|stateVector)+)) -> ^(ROBOT namePair stateVector)
+	: ^(ROBOT ^(OBJECT (namePair|stateVector|connections)+)) -> ^(ROBOT namePair stateVector connections)
 	;
 	
 connections
