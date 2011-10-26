@@ -10,6 +10,7 @@ tokens {
 	STATE_VAR;
 	SERIAL_CONNECTION;
 	KEEPALIVE_OBJECT;
+	FORMAL_PARAMETER;
 }
 
 @header {
@@ -17,7 +18,31 @@ package edu.ua.cs.rdis.gen;
 }
 
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|stateVector|connections)+)) -> ^(ROBOT namePair stateVector connections)
+	: ^(ROBOT ^(OBJECT (namePair|stateVector|connections|primitives)+)) -> ^(ROBOT namePair stateVector connections primitives)
+	;
+
+primitives
+	: ^(PRIMITIVES ^(LIST primitive+)) -> ^(PRIMITIVES primitive+)
+	;
+	
+primitive
+	: ^(OBJECT (primitiveSignature)+) -> ^(PRIMITIVE primitiveSignature)
+	;
+	
+primitiveSignature
+	: ^(SIGNATURE ^(OBJECT (namePair|formalParameterList)+)) -> ^(SIGNATURE namePair formalParameterList)
+	;
+	
+formalParameterList
+	: ^(PARAMETERS ^(LIST formalParameter+)) -> ^(PARAMETERS formalParameter+)
+	;
+	
+formalParameter
+	: ^(OBJECT (varType|formalParameterValue)+) -> ^(FORMAL_PARAMETER varType formalParameterValue)
+	;
+	
+formalParameterValue
+	: ^(VALUE identifier)
 	;
 	
 connections
@@ -62,10 +87,10 @@ stateVector
 	;
 	
 stateVar
-	: ^(OBJECT (stateVarType|namePair|stateVarValue)+) -> ^(STATE_VAR stateVarType namePair stateVarValue?)
+	: ^(OBJECT (varType|namePair|stateVarValue)+) -> ^(STATE_VAR varType namePair stateVarValue?)
 	;
 	
-stateVarType
+varType
 	: ^(TYPE (INT|FLOAT|STRING))
 	;
 

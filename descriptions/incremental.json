@@ -17,5 +17,16 @@
         }
       }
     ]
-  }
+  },
+
+  "primitives": [
+    {
+      "signature": {
+        "name": "fireLasers",
+        "parameters": [
+          {"type": "int", "value": "laserPower"}
+        ]
+      }
+    }
+  ]
 }
