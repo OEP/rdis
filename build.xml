@@ -91,7 +91,9 @@
    </target>
 
    <target name="-build_lang" >
+      <mkdir dir="${src}/${project.package}/gen/" />
       <antlr3 grammar.name="${grammar.lexer}.g" />
+      <antlr3 grammar.name="${grammar.validator}.g" />
       <property name="compile.includes" value="${project.package}/**" />
       <property name="compile.destdir" value="${build}" />
       <antcall target="-compile_java" inheritAll="true" />
@@ -146,9 +148,12 @@
       name        = "-clean_gen"
       description = "Delete ANTLR generated files"
       >
-      <delete file="${src}/${project.package}/lang/${grammar.lexer}.tokens" />
-      <delete file="${src}/${project.package}/lang/${grammar.lexer}.java" />
+      <delete dir="${src}/${project.package}/gen/" />
       <!--
+      <delete file="${src}/${project.package}/gen/${grammar.lexer}.tokens" />
+      <delete file="${src}/${project.package}/gen/${grammar.lexer}.java" />
+      <delete file="${src}/${project.package}/gen/${grammar.lexer}.java" />
+      <delete file="${src}/${project.package}/gen/${grammar.validator}.java" />
       <delete file="${src}/${project.package}/lang/${grammar.parser.basic}.tokens" />
       <delete file="${src}/${project.package}/lang/${grammar.parser.basic}.java" />
       <delete file="${src}/${project.package}/lang/${grammar.tree}.tokens" />
