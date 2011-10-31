@@ -26,6 +26,12 @@
         "parameters": [
           {"type": "int", "value": "laserPower"}
         ]
+      },
+      "writeFormat": {
+        "format": "FIRE LASERS %d",
+        "parameters": [
+          "<laserPower>"
+        ]
       }
     }
   ]

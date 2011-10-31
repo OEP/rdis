@@ -26,7 +26,23 @@ primitives
 	;
 	
 primitive
-	: ^(OBJECT (primitiveSignature)+) -> ^(PRIMITIVE primitiveSignature)
+	: ^(OBJECT (primitiveSignature|writeFormat)+) -> ^(PRIMITIVE primitiveSignature writeFormat)
+	;
+	
+writeFormat
+	: ^(WRITE_FORMAT ^(OBJECT (formatString|parameterList)+)) -> ^(WRITE_FORMAT formatString parameterList)
+	;
+	
+formatString
+	: ^(FORMAT string)
+	;
+	
+parameterList
+	: ^(PARAMETERS ^(LIST expr+)) -> ^(PARAMETERS expr+)
+	;
+	
+expr
+	: primitiveValue
 	;
 	
 primitiveSignature
