@@ -37,6 +37,7 @@
    <macrodef name="antlr3">
       <attribute name="grammar.name" />
       <attribute name="grammar.package" default="${grammar.package}" />
+      <attribute name="debug" default="${antlr.debug}" />
       <sequential>
          <echo message="antlr3 @{grammar.name}" />
          <ANTLR3
@@ -45,7 +46,7 @@
             libdirectory   = "${src}/@{grammar.package}"
             multithreaded  = "${antlr.multithreaded}"
             report         = "${antlr.report}"
-            debug          = "${antlr.debug}"
+            debug          = "@{debug}"
             >
          <classpath>
             <path refid="antlr.classpath" />
@@ -92,8 +93,8 @@
 
    <target name="-build_lang" >
       <mkdir dir="${src}/${project.package}/gen/" />
-      <antlr3 grammar.name="${grammar.lexer}.g" />
-      <antlr3 grammar.name="${grammar.validator}.g" />
+      <antlr3 grammar.name="${grammar.lexer}.g" debug="${antlr.debugParser}" />
+      <antlr3 grammar.name="${grammar.validator}.g" debug="${antlr.debugValidator}" />
       <property name="compile.includes" value="${project.package}/**" />
       <property name="compile.destdir" value="${build}" />
       <antcall target="-compile_java" inheritAll="true" />
