@@ -20,14 +20,32 @@ package edu.ua.cs.rdis.gen;
 rdis
 	: ^(ROBOT ^(OBJECT (namePair|stateVector|connections|primitives)+)) -> ^(ROBOT namePair stateVector connections primitives)
 	;
-
+	
+/**
+  * PRIMITIVES
+  * Defines the grammar for the most basic functions of the robot.
+  */
+	
 primitives
 	: ^(PRIMITIVES ^(LIST primitive+)) -> ^(PRIMITIVES primitive+)
 	;
 	
 primitive
-	: ^(OBJECT (primitiveSignature|writeFormat)+) -> ^(PRIMITIVE primitiveSignature writeFormat)
+	: ^(OBJECT (primitiveSignature|writeFormat|readFormat)+) -> ^(PRIMITIVE primitiveSignature writeFormat readFormat)
 	;
+	
+readFormat
+	: ^(READ_FORMAT ^(OBJECT (regex|exprList)+) -> ^(READ_FORMAT regex exprList?)
+	;
+	
+regex 	
+	: ^(REGEX STRING)
+	;
+	
+exprList
+	: // TODO
+	;
+	
 	
 writeFormat
 	: ^(WRITE_FORMAT ^(OBJECT (formatString|parameterList)+)) -> ^(WRITE_FORMAT formatString parameterList)
@@ -60,6 +78,12 @@ formalParameter
 formalParameterValue
 	: ^(VALUE identifier)
 	;
+	
+	
+/**
+  * CONNECTIONS
+  * Defines the grammar for the connection to the robot.
+  */
 	
 connections
 	: ^(CONNECTIONS ^(OBJECT (serialConnections)+)) -> ^(CONNECTIONS serialConnections?)
@@ -98,6 +122,11 @@ keepaliveInterval
 	: ^(INTERVAL number)
 	;
 	
+/**
+  * STATE VECTOR
+  * Defines the grammar for the variables which describe the robot state.
+  */	
+
 stateVector
 	: ^(STATE ^(LIST stateVar+)) -> ^(STATE stateVar+)
 	;
