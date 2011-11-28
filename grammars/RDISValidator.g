@@ -13,6 +13,7 @@ tokens {
 	FORMAL_PARAMETER;
 	EXPR_LIST;
 	EXPR;
+	INTERFACE;
 }
 
 @header {
@@ -24,6 +25,44 @@ rdis
 	;
 	
 /**
+  * INTERFACES
+  * Defines the grammar to represent the exposed programming interfaces.
+  */
+
+interfaces
+	: ^(INTERFACES ^(LIST interface+)) -> ^(INTERFACES interface+)
+	;
+	
+interface
+	: ^(OBJECT (genericSignature|interfaceType|interfacePrimitive)) -> ^(INTERFACE genericSignature interfaceType interfacePrimitive)
+	;
+	
+
+interfaceTypeStmt
+	: ^(TYPE interfaceType)
+	;
+	
+interfaceType
+	: ADHOC
+	;
+	
+interfacePrimitiveStmt
+	: ^(PRIMITIVE interfacePrimitiveObject)
+	;
+	
+interfacePrimitiveObject
+	: ^(OBJECT (namePair|argumentListStmt|returnList))
+	;
+	
+argumentListStmt
+	: ^(ARGUMENTS ^(LIST exprList)) ->
+	;
+	
+exprList
+	: ^(LIST expr*) -> ^(EXPR_LIST expr*)
+	;
+
+/**
   * PRIMITIVES
   * Defines the grammar for the most basic functions of the robot.
   */
@@ -33,7 +72,7 @@ primitives
 	;
 	
 primitive
-	: ^(OBJECT (primitiveSignature|writeFormat|readFormat)+) -> ^(PRIMITIVE primitiveSignature writeFormat readFormat)
+	: ^(OBJECT (genericSignature|writeFormat|readFormat)+) -> ^(PRIMITIVE genericSignature writeFormat readFormat)
 	;
 	
 readFormat
@@ -65,7 +104,7 @@ expr
 	: primitiveValue -> ^(EXPR primitiveValue)
 	;
 	
-primitiveSignature
+genericSignature
 	: ^(SIGNATURE ^(OBJECT (namePair|formalParameterList)+)) -> ^(SIGNATURE namePair formalParameterList)
 	;
 	

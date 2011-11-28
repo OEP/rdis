@@ -47,7 +47,9 @@ tokens {
 	// Interface keywords.
 	INTERFACES = '"interfaces"';
 	PRIMITIVE = '"primitive"';
+	ARGUMENTS = '"arguments"';
 	RETURNS = '"returns"';
+	ADHOC = '"adhoc"';
 	
 	// TODO: "Domain" modeling.
 	
