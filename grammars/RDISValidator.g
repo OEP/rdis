@@ -14,6 +14,8 @@ tokens {
 	EXPR_LIST;
 	EXPR;
 	INTERFACE;
+	PRIMITIVE_CALL;
+	PAIR;
 }
 
 @header {
@@ -34,7 +36,8 @@ interfaces
 	;
 	
 interface
-	: ^(OBJECT (genericSignature|interfaceType|interfacePrimitive)) -> ^(INTERFACE genericSignature interfaceType interfacePrimitive)
+	: ^(OBJECT (genericSignature|interfaceType|interfacePrimitiveStmt))
+	      -> ^(INTERFACE genericSignature interfaceType interfacePrimitiveStmt)
 	;
 	
 
@@ -51,7 +54,19 @@ interfacePrimitiveStmt
 	;
 	
 interfacePrimitiveObject
-	: ^(OBJECT (namePair|argumentListStmt|returnList))
+	: ^(OBJECT (namePair|argumentListStmt|returnListStmt)+) -> ^(PRIMITIVE_CALL namePair argumentListStmt returnListStmt)
+	;
+	
+returnListStmt
+	: ^(RETURNS ^(LIST identifierValuePair+)) -> ^(RETURNS identifierValuePair+)
+	;
+	
+identifierValuePair
+	: ^(OBJECT (namePair|valueStmt)+) -> ^(PAIR namePair valueStmt)
+	;
+	
+valueStmt
+	: ^(VALUE expr)	
 	;
 	
 argumentListStmt
