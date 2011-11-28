@@ -11,6 +11,8 @@ tokens {
 	SERIAL_CONNECTION;
 	KEEPALIVE_OBJECT;
 	FORMAL_PARAMETER;
+	EXPR_LIST;
+	EXPR;
 }
 
 @header {
@@ -35,17 +37,17 @@ primitive
 	;
 	
 readFormat
-	: ^(READ_FORMAT ^(OBJECT (regex|exprList)+) -> ^(READ_FORMAT regex exprList?)
+	: ^(READ_FORMAT ^(OBJECT (regex|exprStmt)+)) -> ^(READ_FORMAT regex exprStmt)
 	;
 	
 regex 	
-	: ^(REGEX STRING)
+	: ^(REGEX string)
 	;
 	
-exprList
-	: // TODO
+exprStmt
+	: ^(EXPRESSION expr)
 	;
-	
+		
 	
 writeFormat
 	: ^(WRITE_FORMAT ^(OBJECT (formatString|parameterList)+)) -> ^(WRITE_FORMAT formatString parameterList)
@@ -60,7 +62,7 @@ parameterList
 	;
 	
 expr
-	: primitiveValue
+	: primitiveValue -> ^(EXPR primitiveValue)
 	;
 	
 primitiveSignature

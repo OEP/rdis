@@ -32,6 +32,10 @@
         "parameters": [
           "<laserPower>"
         ]
+      },
+      "readFormat": {
+        "regex": "^ZAP! ([0-9]+)$",
+        "expression": "<console.log('Zapped: ' + $1)>"
       }
     }
   ]
