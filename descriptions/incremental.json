@@ -1,8 +1,10 @@
 {
-  "name": "robotWithState",
+  "name": "exampleRobot",
   "state": [
-    {"type": "int", "type": "float", "name": "FOO"},
-    {"value": 5, "name": "BAR", "type": "int"}
+    {"type": "int", "name": "leftSpeed"},
+    {"type": "int", "name": "rightSpeed"},
+    {"type": "int", "name": "leftMinusRight"},
+    {"type": "int", "name": "metersToTicks", "value": 111}
   ],
 
   "connections": {
@@ -22,20 +24,38 @@
   "primitives": [
     {
       "signature": {
-        "name": "fireLasers",
+        "name": "setSpeed",
         "parameters": [
-          {"type": "int", "value": "laserPower"}
+          {"type": "int", "name": "L"},
+          {"type": "int", "name": "R"}
         ]
       },
       "writeFormat": {
-        "format": "FIRE LASERS %d",
+        "format": "SETSPEED: %d,%d",
         "parameters": [
-          "<laserPower>"
+          "<L>", "<R>"
         ]
       },
       "readFormat": {
-        "regex": "^ZAP! ([0-9]+)$",
-        "expression": "<console.log('Zapped: ' + $1)>"
+        "regex": "^NEWSPEED: ([-]?[0-9]+),([-]?[0-9]+)$",
+        "expression": "<leftMinusRight = atoi($1) - atoi($2)>"
+      }
+    }
+  ],
+
+  "interfaces": [
+    {
+      "signature": {
+        "name": "go"
+      },
+      "freq": "adhoc",
+
+      "primitive": {
+        "name": "setSpeed",
+        "arguments": [
+          {"name": "L", "value": "<2 * metersToTicks>"},
+          {"name": "R", "value": "<2 * metersToTicks>"}
+        ]
       }
     }
   ]
