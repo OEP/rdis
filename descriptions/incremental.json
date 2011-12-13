@@ -7,9 +7,19 @@
     {"type": "int", "name": "metersToTicks", "value": 111}
   ],
 
+  "threading": {
+    "single": [
+      {
+        "name": "mainThreadModel",
+        "freq": 10
+      }
+    ]
+  },
+
   "connections": {
     "spp": [
       { "name": "serialConnection",
+        "threading": "mainThreadModel",
         "speed": 38400,
         "onStart": "resetOdometry",
         "onTerminate": "resetOdometry",
@@ -46,15 +56,18 @@
   "interfaces": [
     {
       "signature": {
-        "name": "go"
+        "name": "go",
+        "parameters": [
+          {"type": "float", "name": "howMuch"}
+        ]
       },
       "freq": "adhoc",
 
       "primitive": {
         "name": "setSpeed",
         "arguments": [
-          {"name": "L", "value": "<2 * metersToTicks>"},
-          {"name": "R", "value": "<2 * metersToTicks>"}
+          {"name": "L", "value": "<howMuch * metersToTicks>"},
+          {"name": "R", "value": "<howMuch * metersToTicks>"}
         ]
       }
     }

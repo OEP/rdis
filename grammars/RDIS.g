@@ -24,6 +24,11 @@ tokens {
 	TYPE = '"type"';
 	VALUE = '"value"';
 	
+	// Threading keywords
+	THREADING = '"threading"';
+	SINGLE = '"single"';
+	FREQ = '"freq"';
+	
 	// Connection keywords.
 	CONNECTIONS = '"connections"';
 	SPP = '"spp"';
@@ -56,7 +61,7 @@ tokens {
 	// Data type labels
 	FLOAT = '"float"';
 	INT = '"int"';		// Not used to label matched tokens. (That's what NUMBER is for).
-	STRING;			// This could be confusing. Serves as a type label for matched strings and also a keyword.
+	STRING = '"string"';	// This could be confusing. Serves as a type label for matched strings and also a keyword.
 	NUMBER;
 	IDENTIFIER;
 	OBJECT;
@@ -133,7 +138,12 @@ keyword
 	| PARAMETERS
 	| INTERFACES
 	| EXPRESSION
-	| RETURNS
+	| RETURNS	// TODO: Do we keep this?
+	| THREADING
+	| SINGLE
+	| FREQ
+	| ADHOC
+	| ARGUMENTS
 	;
 	
 value

@@ -32,10 +32,10 @@ rdis
   */
 
 interfaces
-	: ^(INTERFACES ^(LIST interface+)) -> ^(INTERFACES interface+)
+	: ^(INTERFACES ^(LIST interfaceObject+)) -> ^(INTERFACES interfaceObject+)
 	;
 	
-interface
+interfaceObject
 	: ^(OBJECT (genericSignature|interfaceType|interfacePrimitiveStmt))
 	      -> ^(INTERFACE genericSignature interfaceType interfacePrimitiveStmt)
 	;
