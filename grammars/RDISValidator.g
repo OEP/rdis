@@ -15,6 +15,7 @@ tokens {
 	EXPR;
 	INTERFACE;
 	PRIMITIVE_CALL;
+	SINGLE_THREAD_OBJECT;
 	PAIR;
 }
 
@@ -23,9 +24,29 @@ package edu.ua.cs.rdis.gen;
 }
 
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|stateVector|connections|primitives)+)) -> ^(ROBOT namePair stateVector connections primitives)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVector|connections|primitives)+))
+	-> ^(ROBOT namePair threadingObject stateVector connections primitives)
 	;
 	
+// Main threading object. Contains "single" member, etc...	
+threadingObject
+	: ^(THREADING ^(OBJECT (singleThreadingList)+)) -> ^(THREADING singleThreadingList?)
+	;
+	
+// Matches a single threading list
+singleThreadingList
+	: ^(SINGLE ^(LIST singleThreadingObject+)) -> ^(SINGLE singleThreadingObject+)
+	;
+	
+// Matches a single threading object
+singleThreadingObject
+	: ^(OBJECT (namePair|frequency)+) -> ^(SINGLE_THREAD_OBJECT namePair frequency)
+	;
+	
+// Matches '"freq": <number>'	
+frequency
+	: ^(FREQ number)
+	;
 /**
   * INTERFACES
   * Defines the grammar to represent the exposed programming interfaces.
@@ -150,8 +171,12 @@ serialConnections
 	;
 	
 serialConnection
-	: ^(OBJECT (namePair|connectionSpeed|connectionOnStart|connectionOnTerminate|connectionOnKeepalive)+) ->
-		^(SERIAL_CONNECTION namePair connectionSpeed connectionOnStart connectionOnTerminate connectionOnKeepalive)
+	: ^(OBJECT (namePair|connectionThreading|connectionSpeed|connectionOnStart|connectionOnTerminate|connectionOnKeepalive)+) ->
+	  ^(SERIAL_CONNECTION namePair connectionThreading connectionSpeed connectionOnStart connectionOnTerminate connectionOnKeepalive)
+	;
+	
+connectionThreading
+	: ^(THREADING identifier)
 	;
 	
 connectionSpeed
