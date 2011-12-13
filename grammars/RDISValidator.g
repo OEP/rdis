@@ -12,6 +12,8 @@ tokens {
 	KEEPALIVE_OBJECT;
 	FORMAL_PARAMETER;
 	EXPR_LIST;
+	ARGUMENT;
+	ARGUMENT_LIST;
 	EXPR;
 	INTERFACE;
 	PRIMITIVE_CALL;
@@ -24,8 +26,8 @@ package edu.ua.cs.rdis.gen;
 }
 
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVector|connections|primitives)+))
-	-> ^(ROBOT namePair threadingObject stateVector connections primitives)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVector|connections|primitives|interfaces)+))
+	-> ^(ROBOT namePair threadingObject stateVector connections primitives interfaces)
 	;
 	
 // Main threading object. Contains "single" member, etc...	
@@ -57,16 +59,16 @@ interfaces
 	;
 	
 interfaceObject
-	: ^(OBJECT (genericSignature|interfaceType|interfacePrimitiveStmt))
-	      -> ^(INTERFACE genericSignature interfaceType interfacePrimitiveStmt)
+	: ^(OBJECT (genericSignature|interfaceFreqTypeStmt|interfacePrimitiveStmt)+)
+	      -> ^(INTERFACE genericSignature interfaceFreqTypeStmt interfacePrimitiveStmt)
 	;
 	
 
-interfaceTypeStmt
-	: ^(TYPE interfaceType)
+interfaceFreqTypeStmt
+	: ^(FREQ interfaceFreqType)
 	;
 	
-interfaceType
+interfaceFreqType
 	: ADHOC
 	;
 	
@@ -75,7 +77,7 @@ interfacePrimitiveStmt
 	;
 	
 interfacePrimitiveObject
-	: ^(OBJECT (namePair|argumentListStmt|returnListStmt)+) -> ^(PRIMITIVE_CALL namePair argumentListStmt returnListStmt)
+	: ^(OBJECT (namePair|argumentListStmt|returnListStmt)+) -> ^(PRIMITIVE_CALL namePair argumentListStmt returnListStmt?)
 	;
 	
 returnListStmt
@@ -91,11 +93,15 @@ valueStmt
 	;
 	
 argumentListStmt
-	: ^(ARGUMENTS ^(LIST exprList)) ->
+	: ^(ARGUMENTS argumentList)
 	;
 	
-exprList
-	: ^(LIST expr*) -> ^(EXPR_LIST expr*)
+argumentList
+	: ^(LIST argument+) -> ^(ARGUMENT_LIST argument+)	
+	;
+	
+argument
+	: ^(OBJECT (namePair|valueStmt)+) -> ^(ARGUMENT namePair valueStmt)
 	;
 
 /**
@@ -149,14 +155,9 @@ formalParameterList
 	;
 	
 formalParameter
-	: ^(OBJECT (varType|formalParameterValue)+) -> ^(FORMAL_PARAMETER varType formalParameterValue)
+	: ^(OBJECT (varType|namePair)+) -> ^(FORMAL_PARAMETER varType namePair)
 	;
-	
-formalParameterValue
-	: ^(VALUE identifier)
-	;
-	
-	
+		
 /**
   * CONNECTIONS
   * Defines the grammar for the connection to the robot.
@@ -216,6 +217,11 @@ stateVar
 	: ^(OBJECT (varType|namePair|stateVarValue)+) -> ^(STATE_VAR varType namePair stateVarValue?)
 	;
 	
+// Don't use expressions for state vars.
+stateVarValue
+	: ^(VALUE primitiveValue)
+	;
+	
 varType
 	: ^(TYPE (INT|FLOAT|STRING))
 	;
@@ -223,11 +229,6 @@ varType
 namePair
 	: ^(NAME identifier)
 	;
-	
-stateVarValue
-	: ^(VALUE primitiveValue)
-	;
-	
 
 primitiveValue
 	: string
