@@ -1,11 +1,14 @@
 tree grammar RDISValidator;
 
+// This grammar takes a syntax-bound tree from RDIS.g and creates
+// a syntax-free AST for use in later steps.
 options {
 	tokenVocab=RDIS;
 	ASTLabelType=CommonTree;
 	output=AST;
 }
 
+// These are helper tokens to mark objects as validated objects.
 tokens {
 	STATE_VAR;
 	SERIAL_CONNECTION;
@@ -25,6 +28,7 @@ tokens {
 package edu.ua.cs.rdis.gen;
 }
 
+// START RULE
 rdis
 	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVector|connections|primitives|interfaces)+))
 	-> ^(ROBOT namePair threadingObject stateVector connections primitives interfaces)
@@ -58,26 +62,31 @@ interfaces
 	: ^(INTERFACES ^(LIST interfaceObject+)) -> ^(INTERFACES interfaceObject+)
 	;
 	
+// Matches an interface object.
 interfaceObject
 	: ^(OBJECT (genericSignature|interfaceFreqTypeStmt|interfacePrimitiveStmt)+)
 	      -> ^(INTERFACE genericSignature interfaceFreqTypeStmt interfacePrimitiveStmt)
 	;
 	
-
+// Matches an interface frequency type (e.g., "freq": "adhoc",)
 interfaceFreqTypeStmt
 	: ^(FREQ interfaceFreqType)
 	;
-	
+
+// Valid frequency types. Add new frequency types here.
 interfaceFreqType
 	: ADHOC
 	;
-	
+
+// Matches a primitive call description.
 interfacePrimitiveStmt
 	: ^(PRIMITIVE interfacePrimitiveObject)
 	;
 	
+// This matches the primitive call object itself.
 interfacePrimitiveObject
-	: ^(OBJECT (namePair|argumentListStmt|returnListStmt)+) -> ^(PRIMITIVE_CALL namePair argumentListStmt returnListStmt?)
+	: ^(OBJECT (namePair|argumentListStmt|returnListStmt)+)
+        -> ^(PRIMITIVE_CALL namePair argumentListStmt returnListStmt?)
 	;
 	
 returnListStmt

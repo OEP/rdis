@@ -4,6 +4,7 @@ options {
 	output=AST;
 }
 
+// This section contains keywords for our language.
 tokens {
 	// Dummies
 	ROBOT;
@@ -56,7 +57,7 @@ tokens {
 	RETURNS = '"returns"';
 	ADHOC = '"adhoc"';
 	
-	// TODO: "Domain" modeling.
+	// TODO: Domain modeling keywords.
 	
 	// Data type labels
 	FLOAT = '"float"';
@@ -97,22 +98,29 @@ import java.util.regex.Pattern;
  * PARSER RULES
  *--------------------------------------------------*/
  
+// START RULE: The root object.
 rdis
 	: object -> ^(ROBOT object)
 	;
 	
+// Basic JSON syntax for an object.
 object
 	: OCURLY (definition (COMMA definition)*)? CCURLY -> ^(OBJECT definition*)
 	;
 
+// Matches JSON arrays.
 list
 	: OSQUARE (value (COMMA value)*)? CSQUARE -> ^(LIST value*)
 	;
 
+
+// This is a standard member/value pair for JSON.
 definition
 	: keyword COLON value -> ^(keyword value)
 	;
 
+// This matches any known keyword.
+// Note: New keywords must be added to this rule.
 keyword
 	: NAME
 	| INTERVAL
@@ -146,6 +154,8 @@ keyword
 	| ARGUMENTS
 	;
 	
+// Valid values are any primitive value type, plus lists, objects, ID's
+// and keywords.
 value
 	: string
 	| number
@@ -155,14 +165,17 @@ value
 	| keyword
 	;
 
+// Matches an identifier token.
 identifier
 	: Identifier -> ^(IDENTIFIER Identifier)
 	;
 
+// Matches a string token.
 string
 	: String -> ^(STRING String)
 	;
 	
+// Matches a JSON number.
 number
 	: n=Number {Pattern.matches("(0|(-?[1-9]\\d*))(\\.\\d+)?", n.getText())}? Exponent?
 	  -> ^(NUMBER Number Exponent?)
