@@ -1,0 +1,11 @@
+rdis -- robot device interface specification
+--------------------------------------------
+
+Quick start:
+=================
+
+## Build
+$> ant clean && ant
+
+## Execute (currently just the AST is viewable in Antlrworks)
+$> java -jar dist/rdis-*.jar <rdis-file>
