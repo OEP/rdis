@@ -9,7 +9,7 @@ options {
 }
 
 import StateVectorObject, ThreadingObject, InterfaceObject,
-       PrimitiveObject;
+       PrimitiveObject, ConnectionObject;
 
 // These are helper tokens to mark objects as validated objects.
 tokens {
@@ -33,8 +33,8 @@ package edu.ua.cs.rdis.gen;
 
 // START RULE
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connections|primitivesDecl|interfaceObjectDecl)+))
-	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connections primitivesDecl interfaceObjectDecl)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connectionsDecl|primitivesDecl|interfaceObjectDecl)+))
+	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connectionsDecl primitivesDecl interfaceObjectDecl)
 	;
 
 // The declaration for a State Vector (actual object definition in delegate grammar)
@@ -58,55 +58,11 @@ primitivesDecl
   : ^(PRIMITIVES primitives)
   ;
 	
-
+// Connection declaration statement
+connectionsDecl
+  : ^(CONNECTIONS connections)
+  ;
 	
-		
-/**
-  * CONNECTIONS
-  * Defines the grammar for the connection to the robot.
-  */
-	
-connections
-	: ^(CONNECTIONS ^(OBJECT (serialConnections)+)) -> ^(CONNECTIONS serialConnections?)
-	;
-	
-serialConnections
-	: ^(SPP ^(LIST serialConnection+)) -> ^(SPP serialConnection)
-	;
-	
-serialConnection
-	: ^(OBJECT (namePair|connectionThreading|connectionSpeed|connectionOnStart|connectionOnTerminate|connectionOnKeepalive)+) ->
-	  ^(SERIAL_CONNECTION namePair connectionThreading connectionSpeed connectionOnStart connectionOnTerminate connectionOnKeepalive)
-	;
-	
-connectionThreading
-	: ^(THREADING identifier)
-	;
-	
-connectionSpeed
-	: ^(SPEED number)
-	;
-	
-connectionOnStart
-	: ^(ON_START identifier)
-	;
-	
-connectionOnTerminate
-	: ^(ON_TERMINATE identifier)
-	;
-	
-connectionOnKeepalive
-	: ^(ON_KEEPALIVE connectionKeepaliveValue)
-	;
-	
-connectionKeepaliveValue
-	: ^(OBJECT (namePair|keepaliveInterval)+) -> ^(KEEPALIVE_OBJECT namePair keepaliveInterval)
-	;
-		
-keepaliveInterval
-	: ^(INTERVAL number)
-	;
-
 
 /**
   * Some generic constructs that are shared between the
