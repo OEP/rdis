@@ -8,7 +8,7 @@ options {
 	output=AST;
 }
 
-import StateVectorObject, ThreadingObject;
+import StateVectorObject, ThreadingObject, InterfaceObject;
 
 // These are helper tokens to mark objects as validated objects.
 tokens {
