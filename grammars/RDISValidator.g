@@ -32,8 +32,8 @@ package edu.ua.cs.rdis.gen;
 
 // START RULE
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connections|primitives|interfaceObjectDecl)+))
-	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connections primitives interfaceObjectDecl)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connections|primitivesDecl|interfaceObjectDecl)+))
+	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connections primitivesDecl interfaceObjectDecl)
 	;
 
 // The declaration for a State Vector (actual object definition in delegate grammar)
@@ -51,61 +51,14 @@ threadingObjectDecl
 interfaceObjectDecl
   : ^(INTERFACES interfaceArray)
   ;
+
+// Primitive declaration statement.
+primitivesDecl
+  : ^(PRIMITIVES primitives)
+  ;
 	
 
-/**
-  * PRIMITIVES
-  * Defines the grammar for the most basic functions of the robot.
-  */
 	
-primitives
-	: ^(PRIMITIVES ^(LIST primitive+)) -> ^(PRIMITIVES primitive+)
-	;
-	
-primitive
-	: ^(OBJECT (genericSignature|writeFormat|readFormat)+) -> ^(PRIMITIVE genericSignature writeFormat readFormat)
-	;
-	
-readFormat
-	: ^(READ_FORMAT ^(OBJECT (regex|exprStmt)+)) -> ^(READ_FORMAT regex exprStmt)
-	;
-	
-regex 	
-	: ^(REGEX string)
-	;
-	
-exprStmt
-	: ^(EXPRESSION expr)
-	;
-		
-	
-writeFormat
-	: ^(WRITE_FORMAT ^(OBJECT (formatString|parameterList)+)) -> ^(WRITE_FORMAT formatString parameterList)
-	;
-	
-formatString
-	: ^(FORMAT string)
-	;
-	
-parameterList
-	: ^(PARAMETERS ^(LIST expr+)) -> ^(PARAMETERS expr+)
-	;
-	
-expr
-	: primitiveValue -> ^(EXPR primitiveValue)
-	;
-	
-genericSignature
-	: ^(SIGNATURE ^(OBJECT (namePair|formalParameterList)+)) -> ^(SIGNATURE namePair formalParameterList)
-	;
-	
-formalParameterList
-	: ^(PARAMETERS ^(LIST formalParameter+)) -> ^(PARAMETERS formalParameter+)
-	;
-	
-formalParameter
-	: ^(OBJECT (varType|namePair)+) -> ^(FORMAL_PARAMETER varType namePair)
-	;
 		
 /**
   * CONNECTIONS
@@ -152,8 +105,37 @@ connectionKeepaliveValue
 keepaliveInterval
 	: ^(INTERVAL number)
 	;
+
+
+/**
+  * Some generic constructs that are shared between the
+  * delegate grammars.
+  */
+
+parameterList
+	: ^(PARAMETERS ^(LIST expr+)) -> ^(PARAMETERS expr+)
+	;
 	
+expr
+	: primitiveValue -> ^(EXPR primitiveValue)
+	;
 	
+genericSignature
+	: ^(SIGNATURE ^(OBJECT (namePair|formalParameterList)+)) -> ^(SIGNATURE namePair formalParameterList)
+	;
+	
+formalParameterList
+	: ^(PARAMETERS ^(LIST formalParameter+)) -> ^(PARAMETERS formalParameter+)
+	;
+	
+formalParameter
+	: ^(OBJECT (varType|namePair)+) -> ^(FORMAL_PARAMETER varType namePair)
+	;
+	
+/**
+  * Various data types/enums referred throughout the language.
+  */
+
 varType
 	: ^(TYPE (INT|FLOAT|STRING))
 	;
