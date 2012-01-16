@@ -8,7 +8,7 @@ options {
 	output=AST;
 }
 
-import StateVectorObject;
+import StateVectorObject, ThreadingObject;
 
 // These are helper tokens to mark objects as validated objects.
 tokens {
@@ -21,7 +21,6 @@ tokens {
 	EXPR;
 	INTERFACE;
 	PRIMITIVE_CALL;
-	SINGLE_THREAD_OBJECT;
 	PAIR;
 }
 
@@ -33,34 +32,20 @@ package edu.ua.cs.rdis.gen;
 
 // START RULE
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVectorDecl|connections|primitives|interfaces)+))
-	-> ^(ROBOT namePair threadingObject stateVectorDecl connections primitives interfaces)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connections|primitives|interfaces)+))
+	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connections primitives interfaces)
 	;
 
 // The declaration for a State Vector (actual object definition in delegate grammar)
 stateVectorDecl
   : ^(STATE stateVector)
   ;
+
+// The delcaration for a Threading Object
+threadingObjectDecl
+  : ^(THREADING threadingObject)
+  ;
 	
-// Main threading object. Contains "single" member, etc...	
-threadingObject
-	: ^(THREADING ^(OBJECT (singleThreadingList)+)) -> ^(THREADING singleThreadingList?)
-	;
-	
-// Matches a single threading list
-singleThreadingList
-	: ^(SINGLE ^(LIST singleThreadingObject+)) -> ^(SINGLE singleThreadingObject+)
-	;
-	
-// Matches a single threading object
-singleThreadingObject
-	: ^(OBJECT (namePair|frequency)+) -> ^(SINGLE_THREAD_OBJECT namePair frequency)
-	;
-	
-// Matches '"freq": <number>'	
-frequency
-	: ^(FREQ number)
-	;
 /**
   * INTERFACES
   * Defines the grammar to represent the exposed programming interfaces.
