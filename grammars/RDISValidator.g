@@ -32,8 +32,8 @@ package edu.ua.cs.rdis.gen;
 
 // START RULE
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connections|primitives|interfaces)+))
-	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connections primitives interfaces)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObjectDecl|stateVectorDecl|connections|primitives|interfaceObjectDecl)+))
+	-> ^(ROBOT namePair threadingObjectDecl stateVectorDecl connections primitives interfaceObjectDecl)
 	;
 
 // The declaration for a State Vector (actual object definition in delegate grammar)
@@ -45,66 +45,13 @@ stateVectorDecl
 threadingObjectDecl
   : ^(THREADING threadingObject)
   ;
-	
-/**
-  * INTERFACES
-  * Defines the grammar to represent the exposed programming interfaces.
-  */
 
-interfaces
-	: ^(INTERFACES ^(LIST interfaceObject+)) -> ^(INTERFACES interfaceObject+)
-	;
-	
-// Matches an interface object.
-interfaceObject
-	: ^(OBJECT (genericSignature|interfaceFreqTypeStmt|interfacePrimitiveStmt)+)
-	      -> ^(INTERFACE genericSignature interfaceFreqTypeStmt interfacePrimitiveStmt)
-	;
-	
-// Matches an interface frequency type (e.g., "freq": "adhoc",)
-interfaceFreqTypeStmt
-	: ^(FREQ interfaceFreqType)
-	;
 
-// Valid frequency types. Add new frequency types here.
-interfaceFreqType
-	: ADHOC
-	;
-
-// Matches a primitive call description.
-interfacePrimitiveStmt
-	: ^(PRIMITIVE interfacePrimitiveObject)
-	;
+// The declaration for an Interface object.
+interfaceObjectDecl
+  : ^(INTERFACES interfaceArray)
+  ;
 	
-// This matches the primitive call object itself.
-interfacePrimitiveObject
-	: ^(OBJECT (namePair|argumentListStmt|returnListStmt)+)
-        -> ^(PRIMITIVE_CALL namePair argumentListStmt returnListStmt?)
-	;
-	
-returnListStmt
-	: ^(RETURNS ^(LIST identifierValuePair+)) -> ^(RETURNS identifierValuePair+)
-	;
-	
-identifierValuePair
-	: ^(OBJECT (namePair|valueStmt)+) -> ^(PAIR namePair valueStmt)
-	;
-	
-valueStmt
-	: ^(VALUE expr)	
-	;
-	
-argumentListStmt
-	: ^(ARGUMENTS argumentList)
-	;
-	
-argumentList
-	: ^(LIST argument+) -> ^(ARGUMENT_LIST argument+)	
-	;
-	
-argument
-	: ^(OBJECT (namePair|valueStmt)+) -> ^(ARGUMENT namePair valueStmt)
-	;
 
 /**
   * PRIMITIVES
