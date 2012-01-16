@@ -8,9 +8,10 @@ options {
 	output=AST;
 }
 
+import StateVectorObject;
+
 // These are helper tokens to mark objects as validated objects.
 tokens {
-	STATE_VAR;
 	SERIAL_CONNECTION;
 	KEEPALIVE_OBJECT;
 	FORMAL_PARAMETER;
@@ -24,15 +25,22 @@ tokens {
 	PAIR;
 }
 
+
 @header {
 package edu.ua.cs.rdis.gen;
 }
 
+
 // START RULE
 rdis
-	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVector|connections|primitives|interfaces)+))
-	-> ^(ROBOT namePair threadingObject stateVector connections primitives interfaces)
+	: ^(ROBOT ^(OBJECT (namePair|threadingObject|stateVectorDecl|connections|primitives|interfaces)+))
+	-> ^(ROBOT namePair threadingObject stateVectorDecl connections primitives interfaces)
 	;
+
+// The declaration for a State Vector (actual object definition in delegate grammar)
+stateVectorDecl
+  : ^(STATE stateVector)
+  ;
 	
 // Main threading object. Contains "single" member, etc...	
 threadingObject
@@ -213,23 +221,6 @@ keepaliveInterval
 	: ^(INTERVAL number)
 	;
 	
-/**
-  * STATE VECTOR
-  * Defines the grammar for the variables which describe the robot state.
-  */	
-
-stateVector
-	: ^(STATE ^(LIST stateVar+)) -> ^(STATE stateVar+)
-	;
-	
-stateVar
-	: ^(OBJECT (varType|namePair|stateVarValue)+) -> ^(STATE_VAR varType namePair stateVarValue?)
-	;
-	
-// Don't use expressions for state vars.
-stateVarValue
-	: ^(VALUE primitiveValue)
-	;
 	
 varType
 	: ^(TYPE (INT|FLOAT|STRING))
