@@ -1,0 +1,171 @@
+{
+  "name": "irobotCreate", 
+  "author": "Paul Kilgo", 
+  "stateVariables": [
+    {
+      "type": "int", 
+      "name": "bumperStates", 
+      "value": ""
+    }
+  ], 
+  "interfaces": [
+    {
+      "primitiveCalls": [
+        {
+          "priority": 0, 
+          "delay": 100, 
+          "arguments": [], 
+          "name": "bumpers"
+        }
+      ], 
+      "type": "periodic", 
+      "name": "get_bumpers", 
+      "triggers": "detect_bump"
+    }, 
+    {
+      "primitiveCalls": [
+        {
+          "priority": 0, 
+          "delay": 100, 
+          "arguments": [
+            "<velocity*1000>", 
+            "<radius*1000>"
+          ], 
+          "name": "drive"
+        }
+      ], 
+      "type": "adhoc", 
+      "name": "drive", 
+      "parameters": [
+        "velocity", 
+        "radius"
+      ]
+    }, 
+    {
+      "primitiveCalls": [
+        {
+          "priority": 0, 
+          "delay": 1000, 
+          "arguments": [], 
+          "name": "start"
+        }, 
+        {
+          "priority": 1, 
+          "delay": 1000, 
+          "arguments": [], 
+          "name": "full"
+        }
+      ], 
+      "type": "adhoc", 
+      "name": "startup"
+    }, 
+    {
+      "primitiveCalls": [
+        {
+          "priority": 0, 
+          "delay": 100, 
+          "arguments": [
+            "<0>", 
+            "<0>"
+          ], 
+          "name": "drive"
+        }
+      ], 
+      "type": "adhoc", 
+      "name": "shutdown"
+    }
+  ], 
+  "domainOutputs": [
+    {
+      "returns": {
+        "distance": "<int((bumperStates&3)==0)>"
+      }, 
+      "name": "detect_bump"
+    }
+  ], 
+  "connections": {
+    "spp": [
+      {
+        "baud": 57600, 
+        "singleThreading": {
+          "freqHz": 40
+        }, 
+        "name": "btserial", 
+        "startup": {
+          "arguments": [], 
+          "name": "startup"
+        }, 
+        "terminate": {
+          "arguments": [], 
+          "name": "shutdown"
+        }, 
+        "keepalive": {
+          "interval": 1000, 
+          "arguments": [], 
+          "name": "get_bumpers"
+        }
+      }
+    ]
+  }, 
+  "primitives": [
+    {
+      "name": "start", 
+      "formatArgs": [
+        "<128>"
+      ], 
+      "connection": "btserial", 
+      "pack": "B"
+    }, 
+    {
+      "name": "full", 
+      "formatArgs": [
+        "<132>"
+      ], 
+      "connection": "btserial", 
+      "pack": "B"
+    }, 
+    {
+      "name": "drive", 
+      "parameters": [
+        "velocity", 
+        "radius"
+      ], 
+      "formatArgs": [
+        "<137>", 
+        "<velocity>", 
+        "<radius>"
+      ], 
+      "connection": "btserial", 
+      "pack": ">Bhh"
+    }, 
+    {
+      "postActions": [
+        "bumperStates = __out__[0]"
+      ], 
+      "name": "bumpers", 
+      "formatArgs": [
+        "<142>", 
+        "<7>"
+      ], 
+      "connection": "btserial", 
+      "unpack": "B", 
+      "pack": "BB"
+    }
+  ], 
+  "domainInterfaces": [
+    {
+      "calls": {
+        "arguments": [
+          "<linear>", 
+          "<linear/angular if angular != 0 else 32.767>"
+        ], 
+        "name": "drive"
+      }, 
+      "name": "set_velocity", 
+      "parameters": [
+        "angular", 
+        "linear"
+      ]
+    }
+  ]
+}
