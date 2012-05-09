@@ -63,9 +63,11 @@ def main():
     ## any periodic interfaces.
     gModel.tick()
 
-    ## Sleep for some amount of time calculated from the
-    ## connection.
-    rospy.sleep(1.0)
+    ## Loop at 40.0 Hz
+    ## TODO: Draw from threading object.
+    rospy.sleep(1.0 / 40.0)
+
+  gModel.terminate()
 
 if __name__ == "__main__":
   try:

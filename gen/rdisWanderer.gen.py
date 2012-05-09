@@ -60,7 +60,7 @@ def setSpeed_callback(data):
 ## Auto-generated function for publishing ROS Bools.
 def publish_hitObject(rdisMsg, pub):
   env = dict()
-
+  
   ## Generated initializations from model.
   env['distance'] = rdisMsg['distance']
 
@@ -96,19 +96,16 @@ def main():
     ## any periodic interfaces.
     gModel.tick()
 
-    ## Sleep for some amount of time calculated from the
-    ## connection.
+    ## Loop at 40.0 Hz
+    ## TODO: Draw from threading object.
     rospy.sleep(1.0 / 40.0)
 
-  print "Shutting down."
   gModel.terminate()
-  sys.exit(0)
 
 if __name__ == "__main__":
   try:
     main()
-  except rospy.ROSInterruptException as e:
+  except rospy.ROSInterruptException:
     global gModel
-    print "Termination signal received: " + str(e)
     gModel.terminate()
-    sys.exit(1)
+    pass
