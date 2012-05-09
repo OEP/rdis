@@ -2,6 +2,33 @@
 import roslib; roslib.load_manifest('rdis')
 import rospy
 
+"""
+wander.py -- by Paul Kilgo
+
+Behavior node for ROS. Implements simple obstacle avoidance.
+
+Publishes:
+  Topic: 'setSpeed' (Twist):
+    linear.x: desired linear velocity (m/s)
+    angular.x: desired angular velocity (rad/s)
+
+Subscribes:
+  Topic: 'hitObject' (Bool):
+    data: true if object was hit, false otherwise
+
+Notes:
+  Will command the robot to move so long as a message
+  has passed over 'hitObject' topic in the last 3 seconds.
+
+  If the last 'hitObject' message was true, the robot drives forward.
+  If the last 'hitObject' message was false, the robot backs up and turns.
+
+  Otherwise, if a timeout is detected it will attempt to stop the robot and
+  wait for the next message.
+
+  This process is repeated at 10 Hz.
+"""
+
 ## Imports resolved by rosmake
 import time
 from std_msgs.msg import Bool

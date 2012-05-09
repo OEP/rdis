@@ -1,0 +1,5 @@
+== Version 1.0.0 ==
+
+- Initial release
+- Modeled serial connections and the
+  primary data paths of RDIS.
