@@ -1,0 +1,84 @@
+rdis -- the robot device interface specification
+
+a project by the Distributed Autonomy Lab at The University of Alabama
+
+http://robotics.cs.ua.edu/
+http://beastie.cs.ua.edu/~pkilgo/rdis/
+
+Current maintainer: Paul Kilgo
+Advising professor: Dr. Monica Anderson
+
+# WHAT IS RDIS
+
+
+RDIS is a domain model for mapping robotic framework messages to device
+messages in a re-useable way so we don't have to write robot drivers over and
+over. The general approach is:
+
+1. Create an RDIS description for a robot.
+2. Create an RDIS adapter for your framework.
+3. Load RDIS description and GO!
+
+The benefit is that as soon as any robot is RDIS-enabled, it may be used with
+any RDIS-enabled framework.
+
+This project is still in its infancy so we're still figuring out how to do
+this correctly and sustainably.
+
+
+# HOW DO I MAKE A DESCRIPTION FOR MY FAVORITE ROBOT
+
+
+First make sure your robot fits the checklist:
+
+1. The robot has a firmware interface.
+2. The robot is a differential-drive robot.
+2. I can talk with the firmware interface over the serial port (others to come)
+3. The communication protocol is fixed-width packed bytes OR
+   The communication protocol is ASCII-encoded, and memoryless.
+
+Still here? Good!
+
+RDIS descriptions are just text, but it's complicated so there is a tool to
+help you do it. Since we are a model-driven project, we build models of the
+robot and then we compile the model into an RDIS description.
+
+The tool we use is called AToM3 (http://atom3.cs.mcgill.ca). First, you
+download AToM3, get it set up, and make sure it runs. Then, you can install the
+RDIS extension for AToM3.
+
+
+# HOW DO INSTALL THE RDIS EXTENSION FOR ATOM3
+
+
+In this directory, there is a subdirectory called "formalisms." Copy the
+contents of that directory into AToM3's "User Formalisms" directory.
+
+Then you can open up AToM3, press F3, load the "RDIS" formalism in your
+"User Formalism" directory, and begin making models.
+
+
+# HOW DO I BEGIN MAKING MODELS
+
+
+I assumed you already loaded the "RDIS" formalism (see above section).
+
+There are buttons at the top of AToM3. Left-click the next thing you want to
+make on the canvas. Next, Ctrl+Right Click on the canvas to make that thing
+appear.
+
+Once things are on the canvas, you can:
+
+* Hover over the thing and press "E" to edit its attributes (or double-click)
+* Ctrl+Left Click to drag an arrow between two things.
+* Press the "Edit" button to give your robot model a name.
+* Press the "Compile" button to compile the description.
+
+There is a specific language to how you design the things and arrows on the
+canvas, and as you click the "Compile" button a lot you'll notice that it tends
+to complain. To understand the language, you must first understand the model
+we are following. For more information about the model, please see the RDIS
+wiki pages on the Distributed Autonomy Lab's wiki, or I'll attempt to link
+you right there:
+
+http://ua-robotics.net/index.php?title=RDIS
