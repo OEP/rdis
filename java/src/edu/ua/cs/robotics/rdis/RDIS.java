@@ -2,6 +2,9 @@ package edu.ua.cs.robotics.rdis;
 
 import java.util.HashMap;
 
+import org.python.core.PyInteger;
+import org.python.util.PythonInterpreter;
+
 /**
  * RDIS model interpreter for Java.
  *
